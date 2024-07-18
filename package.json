@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build-pack": "rollup -c"
+    "build-pack:dev": "rollup -c --environment NODE_ENV:development",
+    "build-pack": "rollup -c --environment NODE_ENV:production"
   },
   "author": "UWINEZA joel",
   "license": "MIT",

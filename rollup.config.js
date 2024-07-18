@@ -5,16 +5,20 @@ import external from 'rollup-plugin-peer-deps-external';
 import postcss from 'rollup-plugin-postcss';
 import { terser } from 'rollup-plugin-terser';
 
+const devMode = (process.env.NODE_ENV !== 'production');
+
 export default [
     {
         input: './src/index.js',
         output: [{
             file: 'dist/index.js',
             format: 'cjs',
+            sourcemap: devMode ? "inline" : false,
         }, {
             file: 'dist/index.es.js',
             format: 'es',
-            exports: 'named' 
+            exports: 'named',
+            sourcemap: devMode ? "inline" : false,
         }],
         plugins: [
             postcss({
@@ -24,22 +28,25 @@ export default [
             babel({
                 "exclude": "node_modules/**",
                 presets: ['@babel/preset-react'],
-                babelHelpers: 'bundled',
-                // plugins: [
-                //     [
-                //         "@babel/plugin-proposal-class-properties",
-                //         { "loose": false }
-                //     ],
-                //     [
-                //         "@babel/plugin-transform-runtime",
-                //         { "corejs": 2 }
-                //     ]
-                // ]
+                babelHelpers: 'bundled'
             }),
             commonjs(),
             external(),
             resolve(),
-            terser(),
+            terser({
+                ecma: 2020,
+                mangle: { toplevel: true },
+                compress: {
+                    module: true,
+                    toplevel: true,
+                    unsafe_arrows: true,
+                    drop_console: !devMode,
+                    drop_debugger: !devMode
+                },
+                output: {
+                    quote_style: 1
+                }
+            }),
         ]
     }
 ]
